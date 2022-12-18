@@ -28,14 +28,17 @@ public class FirstController {
 	                         @RequestParam("action") String action,
                              Model model
 	) {
+		int result = 0;
+
 		switch (action) {
-			case "add" -> model.addAttribute("result", a + b);
-			case "sub" -> model.addAttribute("result", a - b);
-			case "ost" -> model.addAttribute("result", a % b);
-			case "mul" -> model.addAttribute("result", a * b);
-			case "del" -> model.addAttribute("result", a / b);
+			case "add" -> result = a + b;
+			case "sub" -> result = a - b;
+			case "ost" -> result = a % b;
+			case "mul" -> result = a * b;
+			case "del" -> result = a / b;
 		}
 
+		model.addAttribute("result", result);
 		return "first/calc";
 	}
 
