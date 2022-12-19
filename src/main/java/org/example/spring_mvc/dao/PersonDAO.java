@@ -30,4 +30,13 @@ public class PersonDAO {
 				.findAny()
 				.orElse(null);
 	}
+
+	public void create(String name) {
+		people.add(new Person(++PEOPLE_COUNT, name));
+	}
+
+	public void save(Person person) {
+		person.setId(++PEOPLE_COUNT);
+		people.add(person);
+	}
 }
