@@ -30,48 +30,102 @@ public class PersonDAO {
 			throw new RuntimeException(e);
 		}
 	}
-	public List<Person> index() throws SQLException {
+	public List<Person> index() {
 		List<Person> people = new ArrayList<>();
 
-		Statement statement = connection.createStatement();
-		ResultSet resultSet = statement.executeQuery("select * from person");
+		Statement statement = null;
+		try {
+			statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery("select * from person");
 
-		while (resultSet.next()) {
-			Person person = new Person();
+			while (resultSet.next()) {
+				Person person = new Person();
 
-			person.setId(resultSet.getInt("id"));
-			person.setName(resultSet.getString("name"));
-			person.setAge(resultSet.getInt("age"));
-			person.setEmail(resultSet.getString("email"));
+				person.setId(resultSet.getInt("id"));
+				person.setName(resultSet.getString("name"));
+				person.setAge(resultSet.getInt("age"));
+				person.setEmail(resultSet.getString("email"));
 
-			people.add(person);
+				people.add(person);
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		}
 
 		return people;
 	}
 
 	public Person show(int id) {
-//		return people.stream().filter(person -> person.getId() == id).findAny().orElse(null);
+		Person person = null;
+
+		PreparedStatement preparedStatement =
+				null;
+		try {
+			preparedStatement = connection.prepareStatement("select * from person where id=?");
+			preparedStatement.setInt(1, id);
+
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			resultSet.next();
+
+			person = new Person();
+
+			person.setId(resultSet.getInt("id"));
+			person.setName(resultSet.getString("name"));
+			person.setAge(resultSet.getInt("age"));
+			person.setEmail(resultSet.getString("email"));
+
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+
+
+		return person;
 	}
 
-	public void save(Person person) throws SQLException {
-		Statement statement = connection.createStatement();
+	public void save(Person person) {
+		PreparedStatement preparedStatement =
+				null;
+		try {
+			preparedStatement = connection.prepareStatement("insert into person values(1, ?, ?, ?)");
+			preparedStatement.setString(1, person.getName());
+			preparedStatement.setInt(2, person.getAge());
+			preparedStatement.setString(3, person.getEmail());
 
-		String SQL = "INSERT INTO Person VALUES(" + 1 + ",'" + person.getName() +
-				"'," + person.getAge() + ",'" + person.getEmail() + "')";
+			preparedStatement.executeUpdate();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 
-		statement.executeUpdate(SQL);
 	}
 
 	public void update(int id, Person updatedPerson) {
-//		Person personToBeUpdated = show(id);
-//
-//		personToBeUpdated.setName(updatedPerson.getName());
-//		personToBeUpdated.setAge(updatedPerson.getAge());
-//		personToBeUpdated.setEmail(updatedPerson.getEmail());
+		PreparedStatement preparedStatement =
+				null;
+		try {
+			preparedStatement = connection.prepareStatement("update person set name=?, age=?, email=? where id=?");
+
+			preparedStatement.setString(1,updatedPerson.getName());
+			preparedStatement.setInt(2, updatedPerson.getAge());
+			preparedStatement.setString(3, updatedPerson.getEmail());
+			preparedStatement.setInt(4, id);
+
+			preparedStatement.executeUpdate();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public void delete(int id) {
-		people.removeIf(p -> p.getId() == id);
+		PreparedStatement preparedStatement =
+				null;
+		try {
+			preparedStatement = connection.prepareStatement("delete from person where id=?");
+			preparedStatement.setInt(1, id);
+			preparedStatement.executeUpdate();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+
 	}
 }
