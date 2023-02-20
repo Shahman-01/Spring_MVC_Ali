@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class PersonDAO {
@@ -29,6 +30,12 @@ public class PersonDAO {
 		return jdbcTemplate.query(
 				"select * from person where id=?", new Object[]{id}, new BeanPropertyRowMapper<>(Person.class))
 				.stream().findAny().orElse(null);
+	}
+
+	public Optional<Person> show(String email) {
+		return jdbcTemplate.query(
+				"select * from person where email=?", new Object[]{email},
+				new BeanPropertyRowMapper<>(Person.class)).stream().findAny();
 	}
 
 	public void save(Person person) {
